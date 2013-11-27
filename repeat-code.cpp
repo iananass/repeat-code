@@ -1,37 +1,45 @@
-/* 
- * File:   main.cpp
- * Author: iananass
- *
- * Created on November 26, 2013, 9:41 PM
- */
-
 #include <cstdlib>
 #include <vector>
 #include <iomanip>
+#include <assert.h>
 #include <iostream>
-
-int N = 0;
+#include <inttypes.h>
 
 class RepeatCode
 {
-    int m_r; // repeat Number
-    int m_k; // code len
-    std::vector<int> m_code;
-public:
+    u_int64_t m_r; // Количество повторений
+    u_int64_t m_k; // Длина кода
+    std::vector<u_int64_t> m_code; // Вектор длины m_k для хранения бит ошибок
 
-    RepeatCode(int K, int R)
-    : m_r(R)
-    , m_k(K)
+    // Расставляет numReverseBits бит ошибок в промежутке от currentPos до конца
+    // Записывает в numSuccess кол-во исправленных ВЕРНО ошибок
+
+    void Combinate(u_int64_t currentPos, u_int64_t numReverseBits, u_int64_t& numSuccess)
     {
-        m_code.resize(m_k, 0);
+        if (numReverseBits > Len() - currentPos)
+            return;
+        if (!numReverseBits) {
+            ++numSuccess;
+            return;
+        }
+        for (u_int64_t i = currentPos; i < Len(); ++i) {
+            if (SetBit(i) == 0)
+                Combinate(i + 1, numReverseBits - 1, numSuccess);
+            UnsetBit(i);
+        }
     }
-    
-    int Len() const
+
+    // Длина всей последовательности
+
+    u_int64_t Len() const
     {
         return m_r * m_k;
     }
 
-    int SetBit(int offset)
+    // Записывает ошибку в указанную позицию
+    // Возвращает 1, если ошибка будет исправлена НЕверно, иначе - 0
+
+    u_int64_t SetBit(u_int64_t offset)
     {
         ++m_code[offset % m_k];
         if (m_code[offset % m_k] > m_r / 2)
@@ -39,35 +47,58 @@ public:
         return 0;
     }
 
-    int UnsetBit(int offset)
+    // Стирает ошибку из указанной позиции
+
+    void UnsetBit(u_int64_t offset)
     {
+        assert(m_code[offset % m_k]);
         --m_code[offset % m_k];
+    }
+
+
+public:
+
+    // В конструкторе передаем R, k
+
+    RepeatCode(u_int64_t K, u_int64_t R)
+    : m_r(R)
+    , m_k(K)
+    {
+        m_code.resize(m_k, 0);
+    }
+
+    // Расставляет M бит по всей комбинации
+    // Возвращает общее количество ВЕРНО исправленных ошибок
+
+    u_int64_t CalcFixedErrors(u_int64_t M)
+    {
+        u_int64_t successes = 0;
+        Combinate(0, M, successes);
+        return successes;
     }
 };
 
-void Combinate(std::vector<int>& code, int currentPos, int numReverseBits)
+// Рассчет количества возможных комбинаций (!) по сокращенной формуле (!) 
+// Иначе не влезем в размерность Unsigned long long
+
+u_int64_t binomial(int n, int k)
 {
-    if (numReverseBits > code.size() - currentPos)
-        return;
-    if (!numReverseBits) {
-        std::cout << std::setw(2) << N++ << "   ";
-        for (int i = 0; i < code.size(); ++i)
-            std::cout << code[i] << " ";
-        std::cout << std::endl;
-        return;
-    }
-    for (int i = currentPos; i < code.size(); ++i) {
-        code[i] = 1;
-        Combinate(code, i + 1, numReverseBits - 1);
-        code[i] = 0;
-    }
+    u_int64_t dividend = 1; // Делимое = k * (k-1) * ... * (k - (n-1))
+    for (int i = 0; i < n; ++i)
+        dividend *= k - i;
+
+    u_int64_t divisor = 1; // Делитель =  n!
+    for (int i = 1; i <= n; ++i)
+        divisor *= i;
+    return dividend / divisor;
 }
 
 int main(int argc, char** argv)
 {
-    std::vector<int> code;
-    code.resize(10, 0);
-    Combinate(code, 0, 3);
+    RepeatCode code(5, 3);
+    std::cout << code.CalcFixedErrors(5) << std::endl;
+    std::cout << binomial(5,15);
+    
     return 0;
 }
 
