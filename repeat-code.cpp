@@ -1,9 +1,9 @@
-#include <cstdlib>
-#include <vector>
-#include <iomanip>
 #include <assert.h>
-#include <iostream>
+#include <cstdlib>
 #include <inttypes.h>
+#include <iomanip>
+#include <iostream>
+#include <vector>
 
 class RepeatCode
 {
@@ -58,7 +58,7 @@ class RepeatCode
 
 public:
 
-    // В конструкторе передаем R, k
+    // При создании передаем R, k
 
     RepeatCode(u_int64_t K, u_int64_t R)
     : m_r(R)
@@ -95,10 +95,27 @@ u_int64_t binomial(int n, int k)
 
 int main(int argc, char** argv)
 {
-    RepeatCode code(5, 3);
-    std::cout << code.CalcFixedErrors(5) << std::endl;
-    std::cout << binomial(5,15);
-    
+    int k = 0, r = 0;
+    while (!(k > 0)) {
+        std::cout << "Input k (greater than 0): ";
+        std::cin >> k;
+    }
+
+    while (!(r > 1 && r & 1)) {
+        std::cout << "Input r (odd, greater than 1): ";
+        std::cin >> r;
+    }
+
+    std::cout << "k = " << k << "   r = " << r << std::endl << std::endl << std::endl;
+    std::cout << std::setw(7) << "M" << std::setw(15) << "correct, %" << std::setw(15) << "incorrect, %" << std::endl;
+    std::cout << std::setw(7) << r / 2 << std::setw(15) << "100" << std::setw(15) << "0" << std::endl;
+    for (int i = r / 2 + 1; i < k * (r / 2) + 1; ++i) {
+        RepeatCode code(k, r);
+        u_int32_t total = binomial(i, r * k);
+        u_int32_t correct = code.CalcFixedErrors(i);
+        std::cout << std::setw(7) << i << std::setw(15) << double(correct) / total * 100 << std::setw(15) << double(total - correct) / total * 100 << std::endl;
+    }
+    std::cout << std::setw(7) << k * (r / 2) + 1 << std::setw(15) << "0" << std::setw(15) << "100" << std::endl;
     return 0;
 }
 
