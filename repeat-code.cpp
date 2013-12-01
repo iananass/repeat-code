@@ -109,20 +109,20 @@ struct entry {
 
 void PrintDestribution(const std::vector<entry>& results, int k, int r) {
     std::cout << "k = " << k << "   r = " << r << std::endl << std::endl;
-    std::cout << std::setw(7) << "M" << std::setw(25) << "correct, %" << std::setw(25) << "incorrect, %" << std::endl;
-    std::cout << std::setw(7) << r / 2 << std::setw(25) << "all" << std::setw(25) << "0" << std::endl;
+    std::cout << std::setw(7) << "M" << std::setw(15) << "correct, %" << std::setw(15) << "incorrect, %" << std::endl;
+    std::cout << std::setw(7) << r / 2 << std::setw(15) << "all" << std::setw(15) << "0" << std::endl;
     std::cout.precision(6);
     std::cout.setf(std::ios::fixed, std::ios::floatfield);
     for (std::vector<entry>::const_iterator it = results.begin(), ie = results.end(); it != ie; ++it) {
-        std::cout << std::setw(7) << it->m << std::setw(25) << double(it->correct) / it->total << std::setw(25) << double(it->total - it->correct) / it->total << std::endl;
+        std::cout << std::setw(7) << it->m << std::setw(15) << double(it->correct) / it->total << std::setw(15) << double(it->total - it->correct) / it->total << std::endl;
     }
-    std::cout << std::setw(7) << k * (r / 2) + 1 << std::setw(25) << "0" << std::setw(25) << "all" << std::endl;
+    std::cout << std::setw(7) << k * (r / 2) + 1 << std::setw(15) << "0" << std::setw(15) << "all" << std::endl;
 }
 
 void CalcDestribution(std::vector<entry>& results, int k, int r) {
     std::cout << "k = " << k << "   r = " << r << std::endl << std::endl;
-    std::cout << std::setw(7) << "M" << std::setw(25) << "correct, %" << std::setw(25) << "incorrect, %" << std::endl;
-    std::cout << std::setw(7) << r / 2 << std::setw(25) << "100" << std::setw(25) << "0" << std::endl;
+    std::cout << std::setw(7) << "M" << std::setw(15) << "correct, %" << std::setw(15) << "incorrect, %" << std::endl;
+    std::cout << std::setw(7) << r / 2 << std::setw(15) << "100" << std::setw(15) << "0" << std::endl;
     std::cout.precision(6);
     std::cout.setf(std::ios::fixed, std::ios::floatfield);
     for (int i = r / 2 + 1; i < k * (r / 2) + 1; ++i) {
@@ -130,10 +130,10 @@ void CalcDestribution(std::vector<entry>& results, int k, int r) {
         u_int64_t total = binomial(i, r * k);
         u_int64_t correct = 0;
         correct = mtCombinate(code, i);
-        std::cout << std::setw(7) << i << std::setw(25) << double(correct) / total << std::setw(25) << double(total - correct) / total << std::endl;
+        std::cout << std::setw(7) << i << std::setw(15) << double(correct) / total << std::setw(15) << double(total - correct) / total << std::endl;
         results.push_back({i, correct, total});
     }
-    std::cout << std::setw(7) << k * (r / 2) + 1 << std::setw(25) << "0" << std::setw(25) << "100" << std::endl;
+    std::cout << std::setw(7) << k * (r / 2) + 1 << std::setw(15) << "0" << std::setw(15) << "100" << std::endl;
 }
 
 void load(std::ifstream& is, std::vector<entry>& vc) {
@@ -150,10 +150,10 @@ void load(std::ifstream& is, std::vector<entry>& vc) {
 void save(std::ofstream& is, const std::vector<entry>& vc) {
     if (vc.size() == 0)
         return;
-    is << std::setw(7) << vc[0].m << std::setw(25) << vc[0].correct << std::setw(25) << vc[0].total;
+    is << std::setw(7) << vc[0].m << std::setw(15) << vc[0].correct << std::setw(15) << vc[0].total;
 
     for (std::vector<entry>::const_iterator it = vc.begin() + 1, ie = vc.end(); it != ie; ++it) {
-        is << std::endl << std::setw(7) << it->m << std::setw(25) << it->correct << std::setw(25) << it->total;
+        is << std::endl << std::setw(7) << it->m << std::setw(15) << it->correct << std::setw(15) << it->total;
     }
 }
 
