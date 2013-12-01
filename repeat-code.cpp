@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <thread>
 #include <vector>
-#include <gmpxx.h>
 
 class RepeatCode {
     int m_r; // repeat Number
@@ -112,8 +111,10 @@ void PrintDestribution(const std::vector<entry>& results, int k, int r) {
     std::cout << "k = " << k << "   r = " << r << std::endl << std::endl;
     std::cout << std::setw(7) << "M" << std::setw(25) << "correct, %" << std::setw(25) << "incorrect, %" << std::endl;
     std::cout << std::setw(7) << r / 2 << std::setw(25) << "all" << std::setw(25) << "0" << std::endl;
+    std::cout.precision(6);
+    std::cout.setf(std::ios::fixed, std::ios::floatfield);
     for (std::vector<entry>::const_iterator it = results.begin(), ie = results.end(); it != ie; ++it) {
-        std::cout << std::setw(7) << it->m << std::setw(25) << ((it->correct)* 100 / it->total) << std::setw(25) << ((it->total - it->correct) * 100 / it->total) << std::endl;
+        std::cout << std::setw(7) << it->m << std::setw(25) << double(it->correct) / it->total << std::setw(25) << double(it->total - it->correct) / it->total << std::endl;
     }
     std::cout << std::setw(7) << k * (r / 2) + 1 << std::setw(25) << "0" << std::setw(25) << "all" << std::endl;
 }
@@ -122,12 +123,14 @@ void CalcDestribution(std::vector<entry>& results, int k, int r) {
     std::cout << "k = " << k << "   r = " << r << std::endl << std::endl;
     std::cout << std::setw(7) << "M" << std::setw(25) << "correct, %" << std::setw(25) << "incorrect, %" << std::endl;
     std::cout << std::setw(7) << r / 2 << std::setw(25) << "100" << std::setw(25) << "0" << std::endl;
+    std::cout.precision(6);
+    std::cout.setf(std::ios::fixed, std::ios::floatfield);
     for (int i = r / 2 + 1; i < k * (r / 2) + 1; ++i) {
         RepeatCode code(k, r);
         u_int64_t total = binomial(i, r * k);
         u_int64_t correct = 0;
         correct = mtCombinate(code, i);
-        std::cout << std::setw(7) << i << std::setw(25) << ((correct)* 100 / total) << std::setw(25) << ((total - correct) * 100 / total) << std::endl;
+        std::cout << std::setw(7) << i << std::setw(25) << double(correct) / total << std::setw(25) << double(total - correct) / total << std::endl;
         results.push_back({i, correct, total});
     }
     std::cout << std::setw(7) << k * (r / 2) + 1 << std::setw(25) << "0" << std::setw(25) << "100" << std::endl;
